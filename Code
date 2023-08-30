@@ -1,0 +1,49 @@
+import tkinter as tk
+from tkinter import messagebox
+import datetime
+import time
+import winsound
+
+class AlarmClockApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Alarm Clock")
+        
+        self.alarm_time = tk.StringVar()
+        
+        self.label = tk.Label(root, text="Set Alarm Time (HH:MM):")
+        self.label.pack(pady=10)
+        
+        self.entry = tk.Entry(root, textvariable=self.alarm_time)
+        self.entry.pack(pady=5)
+        
+        self.set_button = tk.Button(root, text="Set Alarm", command=self.set_alarm)
+        self.set_button.pack(pady=10)
+        
+        self.alarm_set = False
+        
+    def set_alarm(self):
+        alarm_time_str = self.alarm_time.get()
+        try:
+            alarm_time = datetime.datetime.strptime(alarm_time_str, "%H:%M")
+            current_time = datetime.datetime.now().time()
+            
+            while not self.alarm_set:
+                current_time = datetime.datetime.now().time()
+                if current_time >= alarm_time.time():
+                    self.alarm_set = True
+                    self.play_alarm()
+                    break
+                self.root.update()
+                time.sleep(1)
+        except ValueError:
+            messagebox.showerror("Error", "Invalid time format. Please use HH:MM.")
+
+    def play_alarm(self):
+        winsound.PlaySound("alarm_sound.wav", winsound.SND_FILENAME)
+        response = messagebox.showinfo("Alarm", "Time's up!")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = AlarmClockApp(root)
+    root.mainloop()
